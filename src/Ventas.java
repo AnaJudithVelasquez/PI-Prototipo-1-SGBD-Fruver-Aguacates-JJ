@@ -1,9 +1,15 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+
 
 public class Ventas extends JFrame {
     private JPanel panelVentas;
@@ -69,6 +75,7 @@ public class Ventas extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 agregarVenta();
+                generarFacturaPDF();
             }
         });
 
@@ -92,7 +99,6 @@ public class Ventas extends JFrame {
                 mostrarDatos();
             }
         });
-
 
 
         volverButton.addActionListener(new ActionListener() {
@@ -122,14 +128,14 @@ public class Ventas extends JFrame {
     class ProductoDetalle {
         String COD_PRODUCT;
         String PRODUCT_NAME;
-        String QUANTITY_Kg;
+        String PRODUCT_QUANTITY_Kg;
         String PRODUCT_PRICE;
         String TOTAL_PRODUCT;
 
-        public ProductoDetalle(String COD_PRODUCT, String PRODUCT_NAME, String QUANTITY_Kg, String PRODUCT_PRICE, String TOTAL_PRODUCT) {
+        public ProductoDetalle(String COD_PRODUCT, String PRODUCT_NAME, String PRODUCT_QUANTITY_Kg, String PRODUCT_PRICE, String TOTAL_PRODUCT) {
             this.COD_PRODUCT = COD_PRODUCT;
             this.PRODUCT_NAME = PRODUCT_NAME;
-            this.QUANTITY_Kg = QUANTITY_Kg;
+            this.PRODUCT_QUANTITY_Kg = PRODUCT_QUANTITY_Kg;
             this.PRODUCT_PRICE = PRODUCT_PRICE;
             this.TOTAL_PRODUCT = TOTAL_PRODUCT;
         }
@@ -199,7 +205,7 @@ public class Ventas extends JFrame {
                 ps.setInt(1, codVentaGenerado);
                 ps.setString(2, producto.COD_PRODUCT);
                 ps.setString(3, producto.PRODUCT_NAME);
-                ps.setString(4, producto.QUANTITY_Kg);
+                ps.setString(4, producto.PRODUCT_QUANTITY_Kg);
                 ps.setString(5, producto.PRODUCT_PRICE);
                 ps.setString(6, producto.TOTAL_PRODUCT);
                 ps.addBatch();
@@ -361,12 +367,43 @@ public class Ventas extends JFrame {
         }
     }
 
-    public static void mostrarVentanaVentas() {
-        Ventas ventasFrame = new Ventas();
-        ventasFrame.setContentPane(new Ventas().panelVentas);
-        ventasFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        ventasFrame.setVisible(true);
-        ventasFrame.pack();
-    }
+    public void generarFacturaPDF() {
+        conectar();
 
-}
+        try {
+            Document documento = new Document();
+            PdfWriter.getInstance(documento, new FileOutputStream("Factura_Venta.pdf"));
+            documento.open();
+            documento.add(new Paragraph("FACTURA DE VENTA FRUVER AGUACATES JJ"));
+            documento.add(new Paragraph("Cod_Venta: " + Cod_Venta.getText()));
+            documento.add(new Paragraph("Fecha_Venta: " + Fecha_Venta.getText()));
+            documento.add(new Paragraph("Identificación_Cliente: " + Identificacion_Cliente.getText()));
+            documento.add(new Paragraph("Total_Venta: " + Total_Venta.getText()));
+            documento.add(new Paragraph("DETALLES DE LA VENTA \n"));
+
+            List<ProductoDetalle> copiaProductos = new ArrayList<>(productosVenta);
+            for (ProductoDetalle producto : copiaProductos) {
+                documento.add(new Paragraph("Cod_Producto: " + producto.COD_PRODUCT));
+                documento.add(new Paragraph("Nombre_Producto: " + producto.PRODUCT_NAME));
+                documento.add(new Paragraph("Cantidad_Producto_Kg: " + producto.PRODUCT_QUANTITY_Kg));
+                documento.add(new Paragraph("Precio_Producto: " + producto.PRODUCT_PRICE));
+                documento.add(new Paragraph("Total_Producto: " + producto.TOTAL_PRODUCT));
+                documento.add(new Paragraph("\n"));
+            }
+            documento.close();
+            JOptionPane.showMessageDialog(null, "Factura generada con exito y se guardo en Factura_Venta_pdf");
+        } catch (DocumentException | IOException e) {
+            JOptionPane.showMessageDialog(null, "Error al generar la factura" + e.getMessage());
+            e.printStackTrace();
+        }
+
+    }
+        public static void mostrarVentanaVentas() {
+            Ventas ventasFrame = new Ventas();
+            ventasFrame.setContentPane(new Ventas().panelVentas);
+            ventasFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            ventasFrame.setVisible(true);
+            ventasFrame.pack();
+        }
+
+    }
