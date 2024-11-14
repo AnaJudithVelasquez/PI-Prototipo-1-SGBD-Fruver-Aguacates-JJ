@@ -9,6 +9,8 @@ import java.awt.event.KeyEvent;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Compras extends JFrame {
     private JButton agregarProductoButton;
@@ -57,12 +59,17 @@ public class Compras extends JFrame {
     List<Compras.CompraDetalle> productosCompra = new ArrayList<>();
 
     public Compras() {
+        LocalDate fechaActual = LocalDate.now();
+        DateTimeFormatter formatofecha = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        Fecha_Compra.setText(fechaActual.format(formatofecha));
+
+        setContentPane(panelCompras);
+
         Cod_ProveedorC.setEditable(false);
-        Cod_Proveedor.setEditable(false);
         Cod_Compra.setEditable(false);
-        Cod_ProveedorC.setEditable(false);
         Total_Producto.setEditable(false);
         Total_Compra.setEditable(false);
+        Fecha_Compra.setEditable(false);
 
         mostrarDatos();
         mostrarDatosCompra();
@@ -133,6 +140,7 @@ public class Compras extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 regresar();
+                dispose();
             }
         });
 
@@ -172,6 +180,7 @@ public class Compras extends JFrame {
         }
     }
     void regresar() {
+        this.setVisible(false);
         Fruver_Aguacates_JJ enlace = new Fruver_Aguacates_JJ();
         enlace.mostrarVentanaFruver_Aguacates_JJ();
     }
@@ -225,9 +234,9 @@ public class Compras extends JFrame {
 
     void modificar() {
         conectar();
-        String sql = "update PURCHASES set COD_SUPPLIER = ?, SUPPLIER_NAME = ?, ADDRESS = ?, PHONE_NUMBER = ?";
+        String sql = "update SUPPLIERS set SUPPLIER_NAME = ?, ADDRESS = ?, PHONE_NUMBER = ? WHERE COD_SUPPLIER = ?";
 
-        String COD_SUPPLIER = Cod_Proveedor.getText();
+        String COD_SUPPLIER = Cod_Proveedor.getText().trim();
         String SUPPLIER_NAME = Nombre_Proveedor.getText();
         String ADDRESS = Direccion.getText();
         String PHONE_NUMBER = Telefono.getText();
@@ -235,10 +244,10 @@ public class Compras extends JFrame {
         try {
             ps = conexion.prepareStatement(sql);
 
-            ps.setString(1, COD_SUPPLIER);
-            ps.setString(2, SUPPLIER_NAME);
-            ps.setString(3, ADDRESS);
-            ps.setString(4, PHONE_NUMBER);
+            ps.setString(1, SUPPLIER_NAME);
+            ps.setString(2, ADDRESS);
+            ps.setString(3, PHONE_NUMBER);
+            ps.setString(4, COD_SUPPLIER);
 
 
             int filasModificadas = ps.executeUpdate();
@@ -505,7 +514,6 @@ public class Compras extends JFrame {
 
     public static void mostrarVentanaCompra() {
         Compras compras1 = new Compras();
-        compras1.setContentPane(new Compras().panelCompras);
         compras1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         compras1.setVisible(true);
         compras1.pack();

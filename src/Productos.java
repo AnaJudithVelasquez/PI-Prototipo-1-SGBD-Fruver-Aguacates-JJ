@@ -40,11 +40,7 @@ public class Productos extends JFrame {
         setSize(600, 600);
         setLocationRelativeTo(null);
 
-        Compra1.setEditable(false);
-        NombreProducto1.setEditable(false);
-        PrecioCompra1.setEditable(false);
-        Producto1.setEditable(false);
-        Compra1.setEditable(false);
+        setContentPane(panelProductos);
 
         mostrarDatos();
         mostrarDatosCompra();
@@ -53,6 +49,7 @@ public class Productos extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 regresar();
+                dispose();
             }
         });
 
@@ -108,8 +105,10 @@ public class Productos extends JFrame {
     }
 
     void regresar() {
+        this.setVisible(false);
         Fruver_Aguacates_JJ enlace = new Fruver_Aguacates_JJ();
         enlace.mostrarVentanaFruver_Aguacates_JJ();
+
     }
 
     void agregar() {
@@ -331,8 +330,7 @@ public class Productos extends JFrame {
 
     public static void mostrarVentanaProductos() {
         Productos Productos1 = new Productos();
-        Productos1.setContentPane(new Productos().panelProductos);
-        Productos1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Productos1.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         Productos1.setVisible(true);
         Productos1.pack();
 

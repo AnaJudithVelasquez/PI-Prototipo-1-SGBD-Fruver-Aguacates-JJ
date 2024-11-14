@@ -383,7 +383,9 @@
       </component>
       <vspacer id="79202">
         <constraints>
-          <grid row="12" column="9" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="12" column="9" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+            <preferred-size width="11" height="20"/>
+          </grid>
         </constraints>
       </vspacer>
       <component id="4e69c" class="javax.swing.JButton" binding="agregarProductoButton" default-binding="true">

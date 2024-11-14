@@ -7,9 +7,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Ventas extends JFrame {
     private JPanel panelVentas;
@@ -49,9 +49,14 @@ public class Ventas extends JFrame {
     List<ProductoDetalle> productosVenta = new ArrayList<>();
 
     public Ventas() {
+        LocalDate fechaActual = LocalDate.now();
+        DateTimeFormatter formatofecha = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        Fecha_Venta.setText(fechaActual.format(formatofecha));
         setSize(600, 600);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        setContentPane(panelVentas);
 
         Cod_Producto.setEditable(false);
         Nombre_Producto.setEditable(false);
@@ -59,6 +64,7 @@ public class Ventas extends JFrame {
         Total_Por_Producto.setEditable(false);
         Total_Venta.setEditable(false);
         Cod_Venta.setEditable(false);
+        Fecha_Venta.setEditable(false);
 
         mostrarDatos();
         mostrarProductos();
@@ -105,6 +111,7 @@ public class Ventas extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 regresar();
+                dispose();
             }
         });
 
@@ -150,6 +157,7 @@ public class Ventas extends JFrame {
     }
 
     void regresar() {
+        this.setVisible(false);
         Fruver_Aguacates_JJ enlace = new Fruver_Aguacates_JJ();
         enlace.mostrarVentanaFruver_Aguacates_JJ();
     }
@@ -184,7 +192,11 @@ public class Ventas extends JFrame {
 
             ps.setString(1, COD_EMPLOYEE);
             ps.setString(2, DATE_SALE);
-            ps.setString(3, COSTUMER_IDENTIFICATION);
+            if(COSTUMER_IDENTIFICATION.isEmpty()){
+                ps.setNull(3, java.sql.Types.VARCHAR);
+            } else {
+                ps.setString(3, COSTUMER_IDENTIFICATION);
+            }
             ps.setString(4, TOTAL_SALE_VALUE);
 
             ps.executeUpdate();
@@ -379,8 +391,6 @@ public class Ventas extends JFrame {
             documento.add(new Paragraph("Fecha_Venta: " + Fecha_Venta.getText()));
             documento.add(new Paragraph("Identificación_Cliente: " + Identificacion_Cliente.getText()));
             documento.add(new Paragraph("Total_Venta: " + Total_Venta.getText()));
-            documento.add(new Paragraph("DETALLES DE LA VENTA \n"));
-
             List<ProductoDetalle> copiaProductos = new ArrayList<>(productosVenta);
             for (ProductoDetalle producto : copiaProductos) {
                 documento.add(new Paragraph("Cod_Producto: " + producto.COD_PRODUCT));
@@ -398,12 +408,10 @@ public class Ventas extends JFrame {
         }
 
     }
-        public static void mostrarVentanaVentas() {
-            Ventas ventasFrame = new Ventas();
-            ventasFrame.setContentPane(new Ventas().panelVentas);
-            ventasFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            ventasFrame.setVisible(true);
-            ventasFrame.pack();
-        }
-
+    public static void mostrarVentanaVentas() {
+        Ventas ventasFrame = new Ventas();
+        ventasFrame.setVisible(true);
+        ventasFrame.pack();
     }
+
+}

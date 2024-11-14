@@ -54,28 +54,29 @@ public class Fruver_Aguacates_JJ extends JFrame {
         conectar();
         Compras enlace = new Compras();
         enlace.mostrarVentanaCompra();
+        dispose();
     }
 
      void llamarBotonProducto(){
         conectar();
          Productos enlace = new Productos();
          enlace.mostrarVentanaProductos();
-
+         dispose();
      }
 
     void llamarBotonVenta(){
         conectar();
         Ventas enlace = new Ventas();
         enlace.mostrarVentanaVentas();
+        dispose();
     }
-
 
 
 
     public static void mostrarVentanaFruver_Aguacates_JJ(){
         Fruver_Aguacates_JJ fruver_aguacates_JJ1 = new Fruver_Aguacates_JJ();
-        fruver_aguacates_JJ1.setContentPane(new Fruver_Aguacates_JJ().panelOpciones);
-        fruver_aguacates_JJ1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        fruver_aguacates_JJ1.setContentPane(fruver_aguacates_JJ1.panelOpciones);
+        fruver_aguacates_JJ1.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         fruver_aguacates_JJ1.setVisible(true);
         fruver_aguacates_JJ1.pack();
     }

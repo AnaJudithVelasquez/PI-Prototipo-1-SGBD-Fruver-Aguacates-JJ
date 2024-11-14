@@ -23,6 +23,7 @@ public PantallaInicioFruver(){
         @Override
         public void actionPerformed(ActionEvent e) {
             validarUSER();
+            dispose();
         }
     });
 }
@@ -71,8 +72,8 @@ public PantallaInicioFruver(){
 
     public static void main(String[] args){
         PantallaInicioFruver pantallaInicio1 = new PantallaInicioFruver();
-        pantallaInicio1.setContentPane(new PantallaInicioFruver().panelFruver);
-        pantallaInicio1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        pantallaInicio1.setContentPane(pantallaInicio1.panelFruver);
+        pantallaInicio1.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         pantallaInicio1.setVisible(true);
         pantallaInicio1.pack();
 
