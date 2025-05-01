@@ -17,7 +17,7 @@ public class Ventas extends JFrame {
     private JButton agregarProductoButton;
     private JTable table2;
     private JTextField Cod_Venta;
-    private JTextField Cod_Empleado;
+    private JTextField Cod_Usuario;
     private JTextField Cod_Producto;
     private JTextField Cantidad;
     private JTextField Precio_Producto;
@@ -27,7 +27,7 @@ public class Ventas extends JFrame {
     private JTextField Identificacion_Cliente;
     private JTextField Fecha_Venta;
     private JLabel COD_SALE;
-    private JLabel COD_EMPLOYEE;
+    private JLabel COD_USER;
     private JLabel DATE_SALE;
     private JLabel COSTUMER_IDENTIFICATION;
     private JLabel COD_PRODUCT;
@@ -46,7 +46,7 @@ public class Ventas extends JFrame {
     PreparedStatement ps;
     ResultSet rs;
 
-    List<ProductoDetalle> productosVenta = new ArrayList<>();
+    List<Ventas.ProductoDetalle> productosVenta = new ArrayList<>();
 
     public Ventas() {
         LocalDate fechaActual = LocalDate.now();
@@ -63,7 +63,6 @@ public class Ventas extends JFrame {
         Precio_Producto.setEditable(false);
         Total_Por_Producto.setEditable(false);
         Total_Venta.setEditable(false);
-        Cod_Venta.setEditable(false);
         Fecha_Venta.setEditable(false);
 
         mostrarDatos();
@@ -182,15 +181,15 @@ public class Ventas extends JFrame {
         try {
             conexion.setAutoCommit(false);
 
-            String sqlSales = "INSERT INTO SALES (COD_EMPLOYEE, DATE_SALE, COSTUMER_IDENTIFICATION, TOTAL_SALE_VALUE) VALUES (?, ?, ?, ?)";
+            String sqlSales = "INSERT INTO SALES (COD_USER, DATE_SALE, COSTUMER_IDENTIFICATION, TOTAL_SALE_VALUE) VALUES (?, ?, ?, ?)";
             ps = conexion.prepareStatement(sqlSales, Statement.RETURN_GENERATED_KEYS);
 
-            String COD_EMPLOYEE = Cod_Empleado.getText().trim();
+            String COD_USER = Cod_Usuario.getText().trim();
             String DATE_SALE = Fecha_Venta.getText();
             String COSTUMER_IDENTIFICATION = Identificacion_Cliente.getText().trim();
             String TOTAL_SALE_VALUE = Total_Venta.getText().trim().replace(",", ".");
 
-            ps.setString(1, COD_EMPLOYEE);
+            ps.setString(1, COD_USER);
             ps.setString(2, DATE_SALE);
             if(COSTUMER_IDENTIFICATION.isEmpty()){
                 ps.setNull(3, java.sql.Types.VARCHAR);
@@ -221,6 +220,19 @@ public class Ventas extends JFrame {
                 ps.setString(5, producto.PRODUCT_PRICE);
                 ps.setString(6, producto.TOTAL_PRODUCT);
                 ps.addBatch();
+
+                // Actualizar la cantidad en el inventario después de cada venta
+                String cantidadVendida = producto.PRODUCT_QUANTITY_Kg;
+                String codProducto = producto.COD_PRODUCT;
+
+                // Actualizamos la cantidad del producto en el inventario (disminuir QUANTITY_Kg y FINAL_QUANTITY_Kg)
+                String actualizarCantidadSQL = "UPDATE PRODUCTS SET FINAL_QUANTITY_Kg = FINAL_QUANTITY_Kg - ? WHERE COD_PRODUCT = ?";
+                PreparedStatement actualizarCantidadPS = conexion.prepareStatement(actualizarCantidadSQL);
+                // cantidadVendida es la cantidad de producto vendida en Kg
+                actualizarCantidadPS.setString(1, cantidadVendida);  // Decrementamos FINAL_QUANTITY_Kg también
+                actualizarCantidadPS.setString(2, codProducto);      // código del producto que se vendió
+                actualizarCantidadPS.executeUpdate();
+                actualizarCantidadPS.close();
             }
 
             int[] filasInsertadas = ps.executeBatch();
@@ -278,7 +290,7 @@ public class Ventas extends JFrame {
 
     void mostrarDatos() {
         conectar();
-        String sqlSALES = "SELECT s.COD_SALE, s.COD_EMPLOYEE, s.DATE_SALE, s.COSTUMER_IDENTIFICATION, s.TOTAL_SALE_VALUE, sd.COD_PRODUCT, sd.PRODUCT_NAME, sd.PRODUCT_QUANTITY_Kg, sd.PRODUCT_PRICE, sd.TOTAL_PRODUCT " +
+        String sqlSALES = "SELECT s.COD_SALE, s.COD_USER, s.DATE_SALE, s.COSTUMER_IDENTIFICATION, s.TOTAL_SALE_VALUE, sd.COD_PRODUCT, sd.PRODUCT_NAME, sd.PRODUCT_QUANTITY_Kg, sd.PRODUCT_PRICE, sd.TOTAL_PRODUCT " +
                 "FROM SALES s JOIN SALES_DETAILS sd ON s.COD_SALE = sd.COD_SALE";
 
         try {
@@ -304,7 +316,7 @@ public class Ventas extends JFrame {
             while (rs.next()) {
                 Object[] fila = new Object[10];
                 fila[0] = rs.getString("COD_SALE");
-                fila[1] = rs.getString("COD_EMPLOYEE");
+                fila[1] = rs.getString("COD_USER");
                 fila[2] = rs.getString("DATE_SALE");
                 fila[3] = rs.getString("COSTUMER_IDENTIFICATION");
                 fila[4] = rs.getString("COD_PRODUCT");
@@ -386,6 +398,7 @@ public class Ventas extends JFrame {
             Document documento = new Document();
             PdfWriter.getInstance(documento, new FileOutputStream("Factura_Venta.pdf"));
             documento.open();
+
             documento.add(new Paragraph("FACTURA DE VENTA FRUVER AGUACATES JJ"));
             documento.add(new Paragraph("Cod_Venta: " + Cod_Venta.getText()));
             documento.add(new Paragraph("Fecha_Venta: " + Fecha_Venta.getText()));

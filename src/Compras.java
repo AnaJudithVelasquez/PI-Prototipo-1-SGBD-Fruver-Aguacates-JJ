@@ -23,7 +23,7 @@ public class Compras extends JFrame {
     private JTextField Direccion;
     private JTextField Telefono;
     private JTextField Cod_Compra;
-    private JTextField Cod_Administrador;
+    private JTextField Cod_Usuario;
     private JTextField Fecha_Compra;
     private JTextField Producto_Comprado;
     private JTextField Cantidad_Producto_Kg;
@@ -37,7 +37,7 @@ public class Compras extends JFrame {
     private JTable table1P;
     private JScrollPane scrollPane1P;
     private JLabel COD_PURCHASE;
-    private JLabel COD_ADMINISTRATOR;
+    private JLabel COD_USER;
     private JLabel COD_SUPPLIERC;
     private JLabel DATE_PURCHASE;
     private JLabel PURCHASED_PRODUCT;
@@ -66,7 +66,6 @@ public class Compras extends JFrame {
         setContentPane(panelCompras);
 
         Cod_ProveedorC.setEditable(false);
-        Cod_Compra.setEditable(false);
         Total_Producto.setEditable(false);
         Total_Compra.setEditable(false);
         Fecha_Compra.setEditable(false);
@@ -356,34 +355,31 @@ public class Compras extends JFrame {
 
         try {
             conexion.setAutoCommit(false);
-            String sqlPurchases = "INSERT INTO PURCHASES (COD_ADMINISTRATOR, COD_SUPPLIER, DATE_PURCHASE, TOTAL_PURCHASE_VALUE) VALUES (?, ?, ?, ?)";
-            ps = conexion.prepareStatement(sqlPurchases, Statement.RETURN_GENERATED_KEYS);
+            String sqlCompras = "INSERT INTO PURCHASES (COD_USER, COD_SUPPLIER, DATE_PURCHASE, TOTAL_PURCHASE_VALUE) VALUES (?, ?, ?, ?)";
+            ps = conexion.prepareStatement(sqlCompras, Statement.RETURN_GENERATED_KEYS);
 
-            String COD_ADMINISTRATOR = Cod_Administrador.getText().trim();
-            String COD_SUPPLIERC = Cod_ProveedorC.getText().trim();
+            // Reemplaza estos getText() con tus campos UI correspondientes
+            String COD_USER = Cod_Usuario.getText().trim();
+            String COD_SUPPLIER = Cod_ProveedorC.getText().trim();
             String DATE_PURCHASE = Fecha_Compra.getText().trim();
-            String TOTAL_PURCHASE_VALUE = Total_Compra.getText().trim().replace(",",".");
+            String TOTAL_PURCHASE_VALUE = Total_Compra.getText().trim().replace(",", ".");
 
-            ps.setString(1, COD_ADMINISTRATOR);
-            ps.setString(2, COD_SUPPLIERC);
+            ps.setString(1, COD_USER);
+            ps.setString(2, COD_SUPPLIER);
             ps.setString(3, DATE_PURCHASE);
             ps.setString(4, TOTAL_PURCHASE_VALUE);
 
             ps.executeUpdate();
-
             ResultSet rs = ps.getGeneratedKeys();
-
-
             if (rs.next()) {
                 codCompraGenerado = rs.getInt(1);
                 Cod_Compra.setText(String.valueOf(codCompraGenerado));
             } else {
-                throw new SQLException("Error al obtener el COD_PURCHASE generado.");
+                throw new SQLException("No se pudo obtener el COD_PURCHASE generado.");
             }
 
-
-            String sqlPurchases_Details = "INSERT INTO PURCHASES_DETAILS (COD_PURCHASE, PURCHASED_PRODUCT, UNIT_VALUE, QUANTITY_Kg, TOTAL_PRODUCT) VALUES (?, ?, ?, ?, ?)";
-            ps = conexion.prepareStatement(sqlPurchases_Details);
+            String sqlDetalle = "INSERT INTO PURCHASES_DETAILS (COD_PURCHASE, PURCHASED_PRODUCT, UNIT_VALUE, QUANTITY_Kg, TOTAL_PRODUCT) VALUES (?, ?, ?, ?, ?)";
+            ps = conexion.prepareStatement(sqlDetalle);
 
             for (CompraDetalle producto : productosCompra) {
                 ps.setInt(1, codCompraGenerado);
@@ -393,26 +389,32 @@ public class Compras extends JFrame {
                 ps.setString(5, producto.TOTAL_PRODUCT);
                 ps.addBatch();
             }
+            ps.executeBatch();
+            ps.close();
 
-            int[] filasInsertadas = ps.executeBatch();
+            // Actualización del inventario
+            String sqlUpdate = "UPDATE PRODUCTS SET FINAL_QUANTITY_Kg = FINAL_QUANTITY_Kg + ? WHERE PRODUCT_NAME = ?";
+            PreparedStatement psUpdate = conexion.prepareStatement(sqlUpdate);
 
-            if (filasInsertadas.length > 0) {
-                conexion.commit();
-                JOptionPane.showMessageDialog(null, "La compra y los productos se insertaron correctamente.");
-                productosCompra.clear();
-            } else {
-                throw new SQLException("No se pudieron insertar los productos en la compra.");
+            for (CompraDetalle producto : productosCompra) {
+                double cantidad = Double.parseDouble(producto.QUANTITY_Kg);
+                psUpdate.setDouble(1, cantidad);
+                psUpdate.setString(2, producto.PURCHASED_PRODUCT);
+                psUpdate.addBatch();
             }
+            psUpdate.executeBatch();
+            psUpdate.close();
 
+            conexion.commit();
+            JOptionPane.showMessageDialog(null, "Compra registrada correctamente y cantidades actualizadas.");
+            productosCompra.clear();
         } catch (SQLException e) {
             try {
-                if (conexion != null) {
-                    conexion.rollback();
-                }
-                JOptionPane.showMessageDialog(null, "Hay un error al insertar datos: " + e.getMessage());
-            } catch (SQLException rollbackEx) {
-                rollbackEx.printStackTrace();
+                conexion.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
             }
+            JOptionPane.showMessageDialog(null, "Error al registrar la compra: " + e.getMessage());
         } finally {
             try {
                 if (ps != null) ps.close();
@@ -421,8 +423,6 @@ public class Compras extends JFrame {
                 e.printStackTrace();
             }
         }
-
-
     }
 
     void calcularTotalPorProducto() {
@@ -433,6 +433,7 @@ public class Compras extends JFrame {
             double totalProducto = cantidad * precio;
             Total_Producto.setText(String.format("%.2f", totalProducto));
         } catch (NumberFormatException ex) {
+
         }
     }
 
@@ -454,7 +455,7 @@ public class Compras extends JFrame {
 
     void mostrarDatosCompra() {
         conectar();
-        String sqlPURCHASE = "SELECT p.COD_PURCHASE, p.COD_ADMINISTRATOR, p.COD_SUPPLIER, p.DATE_PURCHASE, p.TOTAL_PURCHASE_VALUE, " +
+        String sqlPURCHASE = "SELECT p.COD_PURCHASE, p.COD_USER, p.COD_SUPPLIER, p.DATE_PURCHASE, p.TOTAL_PURCHASE_VALUE, " +
                 "pd.PURCHASED_PRODUCT, pd.UNIT_VALUE, pd.QUANTITY_Kg, pd.TOTAL_PRODUCT " +
                 "FROM PURCHASES p JOIN PURCHASES_DETAILS pd ON p.COD_PURCHASE = pd.COD_PURCHASE";
 
@@ -481,7 +482,7 @@ public class Compras extends JFrame {
             while (rs.next()) {
                 Object[] fila = {
                         rs.getString("COD_PURCHASE"),
-                        rs.getString("COD_ADMINISTRATOR"),
+                        rs.getString("COD_USER"),
                         rs.getString("COD_SUPPLIER"),
                         rs.getString("DATE_PURCHASE"),
                         rs.getString("PURCHASED_PRODUCT"),
@@ -512,7 +513,7 @@ public class Compras extends JFrame {
         }
     }
 
-    public static void mostrarVentanaCompra() {
+    public static void mostrarVentanaCompras() {
         Compras compras1 = new Compras();
         compras1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         compras1.setVisible(true);

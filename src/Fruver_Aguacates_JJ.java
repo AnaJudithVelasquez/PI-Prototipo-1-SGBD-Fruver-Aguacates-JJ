@@ -53,7 +53,7 @@ public class Fruver_Aguacates_JJ extends JFrame {
     void llamarBotonCompra(){
         conectar();
         Compras enlace = new Compras();
-        enlace.mostrarVentanaCompra();
+        enlace.mostrarVentanaCompras();
         dispose();
     }
 

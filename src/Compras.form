@@ -12,7 +12,9 @@
     <children>
       <hspacer id="f7ece">
         <constraints>
-          <grid row="1" column="9" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="9" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="14" height="34"/>
+          </grid>
         </constraints>
       </hspacer>
       <vspacer id="40962">
@@ -37,7 +39,9 @@
       </vspacer>
       <vspacer id="3c7c">
         <constraints>
-          <grid row="14" column="4" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="14" column="4" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+            <preferred-size width="11" height="34"/>
+          </grid>
         </constraints>
       </vspacer>
       <scrollpane id="75361" binding="scrollPane">
@@ -82,7 +86,9 @@
       </scrollpane>
       <vspacer id="e39f6">
         <constraints>
-          <grid row="16" column="10" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="16" column="10" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+            <preferred-size width="11" height="20"/>
+          </grid>
         </constraints>
       </vspacer>
       <hspacer id="4970e">
@@ -250,7 +256,7 @@
           <text value="Cod_Compra:"/>
         </properties>
       </component>
-      <component id="e8017" class="javax.swing.JLabel" binding="COD_ADMINISTRATOR">
+      <component id="e8017" class="javax.swing.JLabel" binding="COD_USER">
         <constraints>
           <grid row="6" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -321,7 +327,7 @@
           <font name="Century" size="16" style="0"/>
         </properties>
       </component>
-      <component id="11af9" class="javax.swing.JTextField" binding="Cod_Administrador">
+      <component id="11af9" class="javax.swing.JTextField" binding="Cod_Usuario">
         <constraints>
           <grid row="6" column="9" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -390,7 +396,9 @@
       </vspacer>
       <component id="4e69c" class="javax.swing.JButton" binding="agregarProductoButton" default-binding="true">
         <constraints>
-          <grid row="15" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="15" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="164" height="37"/>
+          </grid>
         </constraints>
         <properties>
           <background color="-15934182"/>
@@ -400,7 +408,9 @@
       </component>
       <component id="71dca" class="javax.swing.JButton" binding="agregarCompraButton" default-binding="true">
         <constraints>
-          <grid row="15" column="9" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="15" column="9" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="157" height="37"/>
+          </grid>
         </constraints>
         <properties>
           <background color="-15934182"/>
@@ -436,7 +446,9 @@
       </component>
       <component id="ba41b" class="javax.swing.JLabel">
         <constraints>
-          <grid row="1" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="122" height="34"/>
+          </grid>
         </constraints>
         <properties>
           <background color="-1"/>
@@ -455,7 +467,9 @@
       </component>
       <component id="d14b9" class="javax.swing.JButton" binding="mostrarComprasButton" default-binding="true">
         <constraints>
-          <grid row="14" column="13" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="14" column="13" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="164" height="34"/>
+          </grid>
         </constraints>
         <properties>
           <background color="-15934182"/>
@@ -465,7 +479,9 @@
       </component>
       <vspacer id="f510a">
         <constraints>
-          <grid row="0" column="7" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="7" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+            <preferred-size width="11" height="19"/>
+          </grid>
         </constraints>
       </vspacer>
     </children>
